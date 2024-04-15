@@ -388,7 +388,7 @@ public:
 	strRecordLog += _strLiveId + ".txt";
         	
 
-        std::string strCmd = "ffmpeg -y -i '" + _rtmpRecordUrl + "' -timeout 30000000 -vcodec copy -t 10000 -f mp4 ";
+        std::string strCmd = "ffmpeg -y -re -rw_timeout 30000000 -i '" + _rtmpRecordUrl + "' -nostats -acodec copy -vcodec copy -t 10000 ";
         strCmd += RTMP_RECORD_PATH;
         strCmd += _strLiveId + "_";
         strCmd += std::to_string(recordTime) + ".mp4 >";
