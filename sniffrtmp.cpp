@@ -103,6 +103,32 @@ public:
         return isObtainAddr;
     }
 
+
+    void deepFindTcUrl(const uint8_t *_tcpPayload,uint16_t _payloadLen)
+    {
+        if(!tcUrl.empty() || _payloadLen < 64)
+        {
+            return;
+        }
+
+        std::string strPayload((char*)_tcpPayload,_payloadLen);
+
+        std::size_t rtmpPos = strPayload.find("rtmp://");
+        std::size_t livePos = strPayload.find("/live");
+
+        if(std::string::npos != rtmpPos && std::string::npos != livePos)
+        {
+            if(rtmpPos > livePos)
+            {
+                return;
+            }
+            tcUrl = strPayload.substr(rtmpPos,livePos - rtmpPos + 5);
+            std::cout << "deep find tcurl:" << tcUrl << std::endl;
+
+        }
+
+    }
+
     std::string getLiveId()
     {
         std::string strLiveId;
@@ -161,6 +187,7 @@ public:
         {
             return;
         }
+
 
         if (rtmpTypeId != RTMP_HEADER_TYPE_AMF0)
         {
@@ -492,6 +519,7 @@ public:
             //std::cout << "ipid:" << std::hex << iph->iph_ident << std::endl;
             //printf("TCP Dest Port: %d\n", appPort);
             rtmpHander->rtmpHandler->handle(payload,ipTotalLen - tcpHdrLen - 20);
+            rtmpHander->rtmpHandler->deepFindTcUrl(payload,ipTotalLen-tcpHdrLen-20);
 
             flushRecord();
 
